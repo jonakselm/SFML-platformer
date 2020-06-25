@@ -15,12 +15,12 @@ public:
 
 private:
 	sf::Font m_font;
-	// For use in runtime debugging
-	sf::Text m_text;
+	// For use in runtime debugging (showing while in debug)
+	sf::Text m_rampUpText, m_jumpHeightText, m_rampableText;
 
-	sf::Clock m_gameClock, m_jumpClock;
+	sf::Clock m_gameClock;
 	// Dt: Time per frame, JumpTimer: How long space has been held
-	sf::Time m_dt, m_jumpTimer;
+	sf::Time m_dt;
 
 	sf::View m_view;
 
@@ -32,10 +32,9 @@ private:
 	bool m_jumpable = true, m_grounded = true, m_jumping = false, m_falling = false,
 		m_rampable = false;
 
-	const float m_speed = 1, m_gravity = 0.5f, m_minJumpHeight = 100,
-		m_maxJumpHeight = m_minJumpHeight * 2;
+	const float m_moveSpeed = 1, m_jumpSpeed = 0.5f, m_gravity = 0.5f, m_minJumpHeight = 100;
 
-	float m_jumpOrigin;
+	float m_jumpOrigin = 0, m_rampUp = 0, m_jumpHeight = 0;
 
 	sf::RectangleShape m_shape;
 };

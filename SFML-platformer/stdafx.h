@@ -1,5 +1,9 @@
 #pragma once
 
+#ifndef NDEBUG
+#define DEBUG
+#endif // !NDEBUG
+
 // Include SFML headers
 #include <SFML/Audio.hpp>
 #include <SFML/System.hpp>

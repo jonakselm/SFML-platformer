@@ -22,9 +22,17 @@ Game::Game(sf::Window &window)
 
 	m_font.loadFromFile("data/fonts/Georgia.ttf");
 
-	m_text.setFont(m_font);
-	m_text.setPosition(-525, -350);
-	m_text.setString("");
+	m_rampUpText.setFont(m_font);
+	m_rampUpText.setPosition(10, 10);
+	m_rampUpText.setString("");
+
+	m_jumpHeightText.setFont(m_font);
+	m_jumpHeightText.setPosition(10, 60);
+	m_jumpHeightText.setString("");
+
+	m_rampableText.setFont(m_font);
+	m_rampableText.setPosition(10, 110);
+	m_rampableText.setString("Rampable");
 }
 
 Game::~Game()
@@ -33,7 +41,13 @@ Game::~Game()
 
 void Game::updateModel(sf::RenderWindow &window)
 {
+	//////////////////////////////////////////////////
+	// Time (not in use yet)
+
 	m_dt = m_gameClock.restart();
+
+	//////////////////////////////////////////////////
+	// Movement controls
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) ||
 		sf::Keyboard::isKeyPressed(sf::Keyboard::A))
@@ -45,14 +59,15 @@ void Game::updateModel(sf::RenderWindow &window)
 		m_dir = Dir::None;
 
 	//////////////////////////////////////////////////
+	// Jumping controls
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) &&
 		m_jumpable)
 	{
+		m_rampable = true;
 		m_jumpable = false;
 		m_jumping = true;
 		m_jumpOrigin = m_player.getPosition().y;
-		m_jumpClock.restart();
 	}
 	else if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Space) &&
 		m_grounded)
@@ -60,17 +75,18 @@ void Game::updateModel(sf::RenderWindow &window)
 		m_jumpable = true;
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) &&
-		m_rampable)
+		m_rampable && m_rampUp <= 100)
 	{
-		m_jumpTimer = m_jumpClock.getElapsedTime();
+		m_rampUp = std::abs(m_player.getPosition().y - m_jumpOrigin);
 	}
-
-	if (m_falling || m_grounded)
-		m_rampable = false;
 	else
-		m_rampable = true;
+		m_jumpable = false;
+
+	if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+		m_rampable = false;
 
 	//////////////////////////////////////////////////
+	// Jumping, falling and grounded logic
 
 	if (m_player.insideOffsetYBounds(m_platforms[0], m_gravity) &&
 		m_player.insideXBounds(m_platforms[0]))
@@ -89,20 +105,23 @@ void Game::updateModel(sf::RenderWindow &window)
 
 	if (m_jumping)
 	{
-		if (m_player.getPosition().y > m_jumpOrigin - 100)
-			m_player.move(0, -0.5);
+		m_jumpHeight = std::max(100.f, m_rampUp * 2);
+		if (m_player.getPosition().y > m_jumpOrigin - m_jumpHeight)
+			m_player.move(0, -m_jumpSpeed);
 		else
 			m_jumping = false;
 	}
 	else if (m_falling)
 	{
 		m_player.move(0, m_gravity);
+		m_rampUp = 0;
 	}
 
 	//////////////////////////////////////////////////
+	// Blocking movement through obstacles
 
 	if (m_dir == Dir::Left &&
-		m_player.insideOffsetXBounds(m_platforms[0], -m_speed) &&
+		m_player.insideOffsetXBounds(m_platforms[0], -m_moveSpeed) &&
 		m_player.insideYBounds(m_platforms[0]))
 	{
 		m_dir = Dir::None;
@@ -113,7 +132,7 @@ void Game::updateModel(sf::RenderWindow &window)
 	}
 
 	if (m_dir == Dir::Right &&
-		m_player.insideOffsetXBounds(m_platforms[0], m_speed) &&
+		m_player.insideOffsetXBounds(m_platforms[0], m_moveSpeed) &&
 		m_player.insideYBounds(m_platforms[0]))
 	{
 		m_dir = Dir::None;
@@ -124,58 +143,79 @@ void Game::updateModel(sf::RenderWindow &window)
 	}
 
 	//////////////////////////////////////////////////
+	// Movement (left, right)
 
 	switch (m_dir)
 	{
 	case Dir::None:
 		break;
 	case Dir::Left:
-		m_player.move(-m_speed, 0);
+		m_player.move(-m_moveSpeed, 0);
 		break;
 	case Dir::Right:
-		m_player.move(m_speed, 0);
+		m_player.move(m_moveSpeed, 0);
 		break;
 	}
 
 	//////////////////////////////////////////////////
+	// Update sf::Text
 
-	std::stringstream ss;
-	ss << "Jump ramp-up: " << std::to_string(m_jumpTimer.asSeconds());
-	m_text.setString(ss.str());
+	std::stringstream ss0, ss1;
+
+	ss0 << "Jump ramp-up: " << std::to_string(m_rampUp);
+	m_rampUpText.setString(ss0.str());
+
+	ss1 << "Jump Height: " << std::to_string(m_jumpHeight);
+	m_jumpHeightText.setString(ss1.str());
 
 	//////////////////////////////////////////////////
+	// Camera movement
 
-	/*if (m_player.getWindowedPosition(window).x + m_player.getSize().x > window.getSize().x / 2 + m_player.getSize().x + 100 &&
-		m_player.getVelocity().x > 0)
+	float playerWindowedX = static_cast<float>(m_player.getWindowedPosition(window).x);
+
+	if (playerWindowedX < static_cast<signed int>(window.getSize().x) / 2 - 100 &&
+		m_dir == Dir::Left)
 	{
-		m_view.move(m_player.getVelocity().x, 0);
+		m_view.move(-m_moveSpeed, 0);
 	}
-	if (m_player.getWindowedPosition(window).x < static_cast<signed int>(window.getSize().x) / 2 - 100 &&
-		m_player.getVelocity().x < 0)
+	else if (playerWindowedX + m_player.getSize().x > window.getSize().x / 2 + m_player.getSize().x + 100 &&
+		m_dir == Dir::Right)
 	{
-		m_view.move(m_player.getVelocity().x, 0);
+		m_view.move(m_moveSpeed, 0);
 	}
 
-	if (m_player.getWindowedPosition(window).y + m_player.getSize().y > window.getSize().y / 2 + m_player.getSize().y &&
-		m_player.getVelocity().y > 0)
+	if (m_player.getWindowedPosition(window).y < static_cast<signed int>(window.getSize().y) / 2 - 100)
 	{
-		m_view.move(0, m_player.getVelocity().y);
+		m_view.move(0, -m_jumpSpeed);
 	}
-	if (m_player.getWindowedPosition(window).y < static_cast<signed int>(window.getSize().y) / 2 - 100 &&
-		m_player.getVelocity().y < 0)
+	else if (m_player.getWindowedPosition(window).y + m_player.getSize().y > window.getSize().y / 2 + m_player.getSize().y)
 	{
-		m_view.move(0, m_player.getVelocity().y);
-	}*/
+		m_view.move(0, m_gravity);
+	}
 }
 
 void Game::draw(sf::RenderTarget &target)
 {
+	// Draw to the view
+	target.setView(m_view);
 	for (auto &platform : m_platforms)
 		platform.draw(target);
 
 	m_player.draw(target);
-	target.setView(m_view);
 	target.draw(m_shape);
 
-	target.draw(m_text);
+	// Draw to the window
+	target.setView(target.getDefaultView());
+
+	// Only show variables while in debug
+#ifdef DEBUG
+	target.draw(m_rampUpText);
+	target.draw(m_jumpHeightText);
+	if (m_rampable)
+		target.draw(m_rampableText);
+#endif // DEBUG
+
+	// Set the view back to the custom view to get right pixel
+	// coordinates from sf::RenderWindow/RenderTarget::mapCoordsToPixel();
+	target.setView(m_view);
 }
