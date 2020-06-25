@@ -29,8 +29,12 @@ private:
 
 	Player m_player;
 	Dir m_dir = Dir::None;
-	bool m_jumpable = true, m_grounded = true, m_jumping = false, m_falling = false, m_movable = true;
-	const float m_speed = 1, m_gravity = 0.5f;
+	bool m_jumpable = true, m_grounded = true, m_jumping = false, m_falling = false,
+		m_rampable = false;
+
+	const float m_speed = 1, m_gravity = 0.5f, m_minJumpHeight = 100,
+		m_maxJumpHeight = m_minJumpHeight * 2;
+
 	float m_jumpOrigin;
 
 	sf::RectangleShape m_shape;

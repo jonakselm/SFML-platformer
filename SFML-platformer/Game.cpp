@@ -23,7 +23,7 @@ Game::Game(sf::Window &window)
 	m_font.loadFromFile("data/fonts/Georgia.ttf");
 
 	m_text.setFont(m_font);
-	m_text.setPosition(-400, -350);
+	m_text.setPosition(-525, -350);
 	m_text.setString("");
 }
 
@@ -52,38 +52,52 @@ void Game::updateModel(sf::RenderWindow &window)
 		m_jumpable = false;
 		m_jumping = true;
 		m_jumpOrigin = m_player.getPosition().y;
+		m_jumpClock.restart();
 	}
 	else if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Space) &&
 		m_grounded)
+	{
 		m_jumpable = true;
+	}
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) &&
+		m_rampable)
+	{
+		m_jumpTimer = m_jumpClock.getElapsedTime();
+	}
+
+	if (m_falling || m_grounded)
+		m_rampable = false;
+	else
+		m_rampable = true;
 
 	//////////////////////////////////////////////////
 
 	if (m_player.insideOffsetYBounds(m_platforms[0], m_gravity) &&
 		m_player.insideXBounds(m_platforms[0]))
 	{
-		m_falling = false;
 		m_grounded = true;
 	}
 	else
 	{
-		m_falling = true;
 		m_grounded = false;
 	}
+
+	if (m_grounded || m_jumping)
+		m_falling = false;
+	else
+		m_falling = true;
 
 	if (m_jumping)
 	{
 		if (m_player.getPosition().y > m_jumpOrigin - 100)
 			m_player.move(0, -0.5);
 		else
-		{
 			m_jumping = false;
-			m_falling = true;
-		}
 	}
 	else if (m_falling)
+	{
 		m_player.move(0, m_gravity);
-
+	}
 
 	//////////////////////////////////////////////////
 
@@ -122,6 +136,14 @@ void Game::updateModel(sf::RenderWindow &window)
 		m_player.move(m_speed, 0);
 		break;
 	}
+
+	//////////////////////////////////////////////////
+
+	std::stringstream ss;
+	ss << "Jump ramp-up: " << std::to_string(m_jumpTimer.asSeconds());
+	m_text.setString(ss.str());
+
+	//////////////////////////////////////////////////
 
 	/*if (m_player.getWindowedPosition(window).x + m_player.getSize().x > window.getSize().x / 2 + m_player.getSize().x + 100 &&
 		m_player.getVelocity().x > 0)
