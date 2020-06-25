@@ -1,0 +1,35 @@
+TODO:
+
+Implement features:
+- Minor:
+	- 
+
+- Small:
+	- 
+
+- Medium:
+	- Make it possible to queue a jump to prevent accidentally killing yourself
+from pressing 'Space' too quickly
+
+- Big:
+	- 
+
+- Critical:
+	- 
+
+
+Bugfix:
+- Minor:
+	- 
+
+- Small:
+	- 
+
+- Medium:
+	- Release has a weird bug which occasionally stops the player from jumping
+
+- Big:
+	- 
+
+- Critical:
+	- 
