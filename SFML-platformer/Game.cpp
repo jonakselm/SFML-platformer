@@ -75,7 +75,7 @@ void Game::updateModel(sf::RenderWindow &window)
 		m_jumpable = true;
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) &&
-		m_rampable && m_rampUp <= 100)
+		m_rampable && m_rampUp < 100)
 	{
 		m_rampUp = std::abs(m_player.getPosition().y - m_jumpOrigin);
 	}
