@@ -32,7 +32,8 @@ private:
 	bool m_jumpable = true, m_grounded = true, m_jumping = false, m_falling = false,
 		m_rampable = false;
 
-	const float m_moveSpeed = 1, m_jumpSpeed = 0.5f, m_gravity = 0.5f, m_minJumpHeight = 100;
+	const float m_moveSpeed = 1, m_jumpSpeed = 0.5f, m_gravity = 0.5f;
+	const float m_minJumpHeight = 100;
 
 	float m_jumpOrigin = 0, m_rampUp = 0, m_jumpHeight = 0;
 

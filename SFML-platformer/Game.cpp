@@ -42,7 +42,7 @@ Game::~Game()
 void Game::updateModel(sf::RenderWindow &window)
 {
 	//////////////////////////////////////////////////
-	// Time (not in use yet)
+	// Time
 
 	m_dt = m_gameClock.restart();
 
@@ -88,7 +88,7 @@ void Game::updateModel(sf::RenderWindow &window)
 	//////////////////////////////////////////////////
 	// Jumping, falling and grounded logic
 
-	if (m_player.insideOffsetYBounds(m_platforms[0], m_gravity) &&
+	if (m_player.insideOffsetYBounds(m_platforms[0], m_gravity * m_dt.asMilliseconds()) &&
 		m_player.insideXBounds(m_platforms[0]))
 	{
 		m_grounded = true;
@@ -107,13 +107,13 @@ void Game::updateModel(sf::RenderWindow &window)
 	{
 		m_jumpHeight = std::max(100.f, m_rampUp * 2);
 		if (m_player.getPosition().y > m_jumpOrigin - m_jumpHeight)
-			m_player.move(0, -m_jumpSpeed);
+			m_player.move(0, -m_jumpSpeed * m_dt.asMilliseconds());
 		else
 			m_jumping = false;
 	}
 	else if (m_falling)
 	{
-		m_player.move(0, m_gravity);
+		m_player.move(0, m_gravity * m_dt.asMilliseconds());
 		m_rampUp = 0;
 	}
 
@@ -121,7 +121,7 @@ void Game::updateModel(sf::RenderWindow &window)
 	// Blocking movement through obstacles
 
 	if (m_dir == Dir::Left &&
-		m_player.insideOffsetXBounds(m_platforms[0], -m_moveSpeed) &&
+		m_player.insideOffsetXBounds(m_platforms[0], -m_moveSpeed * m_dt.asMilliseconds()) &&
 		m_player.insideYBounds(m_platforms[0]))
 	{
 		m_dir = Dir::None;
@@ -132,7 +132,7 @@ void Game::updateModel(sf::RenderWindow &window)
 	}
 
 	if (m_dir == Dir::Right &&
-		m_player.insideOffsetXBounds(m_platforms[0], m_moveSpeed) &&
+		m_player.insideOffsetXBounds(m_platforms[0], m_moveSpeed * m_dt.asMilliseconds()) &&
 		m_player.insideYBounds(m_platforms[0]))
 	{
 		m_dir = Dir::None;
@@ -150,10 +150,10 @@ void Game::updateModel(sf::RenderWindow &window)
 	case Dir::None:
 		break;
 	case Dir::Left:
-		m_player.move(-m_moveSpeed, 0);
+		m_player.move(-m_moveSpeed * m_dt.asMilliseconds(), 0);
 		break;
 	case Dir::Right:
-		m_player.move(m_moveSpeed, 0);
+		m_player.move(m_moveSpeed * m_dt.asMilliseconds(), 0);
 		break;
 	}
 
@@ -171,26 +171,26 @@ void Game::updateModel(sf::RenderWindow &window)
 	//////////////////////////////////////////////////
 	// Camera movement
 
-	float playerWindowedX = static_cast<float>(m_player.getWindowedPosition(window).x);
+	float windowedPlayerX = static_cast<float>(m_player.getWindowedPosition(window).x);
 
-	if (playerWindowedX < static_cast<signed int>(window.getSize().x) / 2 - 100 &&
+	if (windowedPlayerX < static_cast<signed int>(window.getSize().x) / 2 - 100 &&
 		m_dir == Dir::Left)
 	{
-		m_view.move(-m_moveSpeed, 0);
+		m_view.move(-m_moveSpeed * m_dt.asMilliseconds(), 0);
 	}
-	else if (playerWindowedX + m_player.getSize().x > window.getSize().x / 2 + m_player.getSize().x + 100 &&
+	else if (windowedPlayerX + m_player.getSize().x > window.getSize().x / 2 + m_player.getSize().x + 100 &&
 		m_dir == Dir::Right)
 	{
-		m_view.move(m_moveSpeed, 0);
+		m_view.move(m_moveSpeed * m_dt.asMilliseconds(), 0);
 	}
 
 	if (m_player.getWindowedPosition(window).y < static_cast<signed int>(window.getSize().y) / 2 - 100)
 	{
-		m_view.move(0, -m_jumpSpeed);
+		m_view.move(0, -m_jumpSpeed * m_dt.asMilliseconds());
 	}
 	else if (m_player.getWindowedPosition(window).y + m_player.getSize().y > window.getSize().y / 2 + m_player.getSize().y)
 	{
-		m_view.move(0, m_gravity);
+		m_view.move(0, m_gravity * m_dt.asMilliseconds());
 	}
 }
 
