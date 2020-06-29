@@ -8,7 +8,7 @@ Features:
 
 - Physics:
 	- Using real physics for jump (with constant downwards acceleration)
-	- Collision detection in the x-axis
+	- Collision detection in the x-plane
 	- Only test for collision while platforms are in view
 
 - Drawing:
