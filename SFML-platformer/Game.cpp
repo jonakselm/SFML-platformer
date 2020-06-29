@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Game.hpp"
 #include <sstream>
+#include <cmath>
 
 Game::Game(sf::Window &window)
 	:
@@ -22,9 +23,9 @@ Game::Game(sf::Window &window)
 
 	m_font.loadFromFile("data/fonts/Georgia.ttf");
 
-	m_rampUpText.setFont(m_font);
-	m_rampUpText.setPosition(10, 10);
-	m_rampUpText.setString("");
+	m_platformYPosText.setFont(m_font);
+	m_platformYPosText.setPosition(10, 10);
+	m_platformYPosText.setString("");
 
 	m_jumpHeightText.setFont(m_font);
 	m_jumpHeightText.setPosition(10, 60);
@@ -33,6 +34,10 @@ Game::Game(sf::Window &window)
 	m_rampableText.setFont(m_font);
 	m_rampableText.setPosition(10, 110);
 	m_rampableText.setString("Rampable");
+
+	m_jumpTimeText.setFont(m_font);
+	m_jumpTimeText.setPosition(10, 160);
+	m_jumpTimeText.setString("");
 }
 
 Game::~Game()
@@ -102,6 +107,9 @@ void Game::updateModel(sf::RenderWindow &window)
 	m_player.move(0, m_velocity * m_dt.asMilliseconds());
 	m_velocity += m_gravity * m_dt.asMilliseconds();
 
+	m_jumpHeight = m_minJumpVel * 2000.f + 0.5f * m_gravity * std::pow(2000.f, 2);
+
+	m_jumpTime = 0 - m_minJumpVel / m_gravity;
 
 	//////////////////////////////////////////////////
 	// Blocking movement through obstacles
@@ -158,13 +166,16 @@ void Game::updateModel(sf::RenderWindow &window)
 	//////////////////////////////////////////////////
 	// Update sf::Text
 
-	std::stringstream ss0, ss1;
+	std::stringstream ss0, ss1, ss2;
 
-	ss0 << "Jump ramp-up: " << std::to_string(m_rampUp);
-	m_rampUpText.setString(ss0.str());
+	ss0 << "Platform[0] Y Position: " << std::to_string(m_platforms[0].getWindowedPosition(window).y);
+	m_platformYPosText.setString(ss0.str());
 
 	ss1 << "Jump Height: " << std::to_string(m_jumpHeight);
 	m_jumpHeightText.setString(ss1.str());
+
+	ss2 << "Estimated Jump Time: " << std::to_string(m_jumpTime);
+	m_jumpTimeText.setString(ss2.str());
 
 	//////////////////////////////////////////////////
 	// Camera movement
@@ -210,8 +221,9 @@ void Game::draw(sf::RenderTarget &target)
 
 	// Only show variables while in debug
 #ifdef DEBUG
-	target.draw(m_rampUpText);
+	target.draw(m_platformYPosText);
 	target.draw(m_jumpHeightText);
+	target.draw(m_jumpTimeText);
 	if (m_rampable)
 		target.draw(m_rampableText);
 #endif // DEBUG

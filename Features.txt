@@ -1,0 +1,20 @@
+Features:
+- General:
+	- Tests every frame if the platforms are in view
+
+- Time:
+	- Fully time dependent
+	- Using sf::Time::asMilliseconds for every player movement
+
+- Physics:
+	- Using real physics for jump (with constant downwards acceleration)
+	- Collision detection in the x-axis
+	- Only test for collision while platforms are in view
+
+- Drawing:
+	- Only draws platforms while they are in view
+
+- Debug:
+	- Using sf:Text to display useful variables while in debug to make runtime
+debugging possible (breakpoints can be a hassle with fast-paced games)
+	- 
