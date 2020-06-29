@@ -15,8 +15,13 @@ public:
 	sf::Vector2f getSize() const;
 	sf::Vector2i getWindowedPosition(sf::RenderTarget &target) const;
 
+	bool inView() const;
+
+	void update(sf::RenderTarget &target);
+
 	void draw(sf::RenderTarget &target);
 
 private:
 	sf::RectangleShape m_shape;
+	bool m_inView = false;
 };

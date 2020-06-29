@@ -46,6 +46,11 @@ void Game::updateModel(sf::RenderWindow &window)
 
 	m_dt = m_gameClock.restart();
 
+	for (auto &platform : m_platforms)
+	{
+		platform.update(window);
+	}
+
 	//////////////////////////////////////////////////
 	// Movement controls
 
@@ -101,26 +106,38 @@ void Game::updateModel(sf::RenderWindow &window)
 	//////////////////////////////////////////////////
 	// Blocking movement through obstacles
 
-	if (m_dir == Dir::Left &&
-		m_player.insideOffsetXBounds(m_platforms[0], -m_moveSpeed * m_dt.asMilliseconds()) &&
-		m_player.insideYBounds(m_platforms[0]))
+	for (const auto &platform : m_platforms)
 	{
-		m_dir = Dir::None;
-	}
-	// Might be of use later
-	else
-	{
+		if (platform.inView())
+		{
+			if (m_dir == Dir::Left &&
+				m_player.insideOffsetXBounds(platform, -m_moveSpeed * m_dt.asMilliseconds()) &&
+				m_player.insideYBounds(platform))
+			{
+				m_dir = Dir::None;
+			}
+			// Might be of use later
+			else
+			{
+			}
+		}
 	}
 
-	if (m_dir == Dir::Right &&
-		m_player.insideOffsetXBounds(m_platforms[0], m_moveSpeed * m_dt.asMilliseconds()) &&
-		m_player.insideYBounds(m_platforms[0]))
+	for (const auto &platform : m_platforms)
 	{
-		m_dir = Dir::None;
-	}
-	// Might be of use later
-	else
-	{
+		if (platform.inView())
+		{
+			if (m_dir == Dir::Right &&
+				m_player.insideOffsetXBounds(platform, m_moveSpeed * m_dt.asMilliseconds()) &&
+				m_player.insideYBounds(platform))
+			{
+				m_dir = Dir::None;
+			}
+			// Might be of use later
+			else
+			{
+			}
+		}
 	}
 
 	//////////////////////////////////////////////////
@@ -180,7 +197,10 @@ void Game::draw(sf::RenderTarget &target)
 	// Draw to the view
 	target.setView(m_view);
 	for (auto &platform : m_platforms)
-		platform.draw(target);
+	{
+		if (platform.inView())
+			platform.draw(target);
+	}
 
 	m_player.draw(target);
 	target.draw(m_shape);
