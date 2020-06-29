@@ -8,7 +8,7 @@ public:
 	~Player();
 
 	sf::Vector2f getPosition() const;
-	sf::Vector2i getWindowedPosition(sf::RenderWindow &window) const;
+	sf::Vector2i getWindowedPosition(sf::RenderTarget &target) const;
 	sf::Vector2f getSize() const;
 	//sf::Vector2f getVelocity() const;
 	sf::FloatRect getGlobalBounds() const;

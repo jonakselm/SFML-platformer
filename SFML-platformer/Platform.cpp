@@ -45,6 +45,10 @@ sf::Vector2f Platform::getSize() const
 	return m_shape.getSize();
 }
 
+sf::Vector2i Platform::getWindowedPosition(sf::RenderTarget &target) const
+{
+	return target.mapCoordsToPixel(m_shape.getPosition());
+}
 void Platform::draw(sf::RenderTarget &target)
 {
 	target.draw(m_shape);

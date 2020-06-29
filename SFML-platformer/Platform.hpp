@@ -13,6 +13,7 @@ public:
 	sf::FloatRect getGlobalBounds() const;
 	sf::Vector2f getPosition() const;
 	sf::Vector2f getSize() const;
+	sf::Vector2i getWindowedPosition(sf::RenderTarget &target) const;
 
 	void draw(sf::RenderTarget &target);
 

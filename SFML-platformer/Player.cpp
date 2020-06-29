@@ -17,9 +17,9 @@ sf::Vector2f Player::getPosition() const
 	return m_shape.getPosition();
 }
 
-sf::Vector2i Player::getWindowedPosition(sf::RenderWindow &window) const
+sf::Vector2i Player::getWindowedPosition(sf::RenderTarget &target) const
 {
-	return window.mapCoordsToPixel(m_shape.getPosition());
+	return target.mapCoordsToPixel(m_shape.getPosition());
 }
 
 sf::Vector2f Player::getSize() const
