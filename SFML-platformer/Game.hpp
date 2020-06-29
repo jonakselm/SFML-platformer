@@ -28,12 +28,16 @@ private:
 	std::vector<Platform> m_platforms;
 
 	Player m_player;
+	float m_velocity = 0.f;
 	Dir m_dir = Dir::None;
 	bool m_jumpable = true, m_grounded = true, m_jumping = false, m_falling = false,
+	bool m_jumpable = true, m_grounded = true, m_jump = false, m_falling = false,
 		m_rampable = false;
 
 	const float m_moveSpeed = 1, m_jumpSpeed = 0.5f, m_gravity = 0.5f;
 	const float m_minJumpHeight = 100;
+	const float m_moveSpeed = 1, m_minJumpVel = -0.4f, m_gravity = 0.0008f,
+		m_terminalVel = 2.5f;
 
 	float m_jumpOrigin = 0, m_rampUp = 0, m_jumpHeight = 0;
 

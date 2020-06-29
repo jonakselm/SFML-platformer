@@ -61,12 +61,11 @@ void Game::updateModel(sf::RenderWindow &window)
 	//////////////////////////////////////////////////
 	// Jumping controls
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) &&
-		m_jumpable)
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
 	{
 		m_rampable = true;
 		m_jumpable = false;
-		m_jumping = true;
+		m_jump = true;
 		m_jumpOrigin = m_player.getPosition().y;
 	}
 	else if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Space) &&
@@ -88,34 +87,16 @@ void Game::updateModel(sf::RenderWindow &window)
 	//////////////////////////////////////////////////
 	// Jumping, falling and grounded logic
 
-	if (m_player.insideOffsetYBounds(m_platforms[0], m_gravity * m_dt.asMilliseconds()) &&
-		m_player.insideXBounds(m_platforms[0]))
+	if (m_jump)
 	{
-		m_grounded = true;
-	}
-	else
-	{
+		m_velocity = m_minJumpVel;
+		m_jump = false;
 		m_grounded = false;
 	}
 
-	if (m_grounded || m_jumping)
-		m_falling = false;
-	else
-		m_falling = true;
+	m_player.move(0, m_velocity * m_dt.asMilliseconds());
+	m_velocity += m_gravity * m_dt.asMilliseconds();
 
-	if (m_jumping)
-	{
-		m_jumpHeight = std::max(100.f, m_rampUp * 2);
-		if (m_player.getPosition().y > m_jumpOrigin - m_jumpHeight)
-			m_player.move(0, -m_jumpSpeed * m_dt.asMilliseconds());
-		else
-			m_jumping = false;
-	}
-	else if (m_falling)
-	{
-		m_player.move(0, m_gravity * m_dt.asMilliseconds());
-		m_rampUp = 0;
-	}
 
 	//////////////////////////////////////////////////
 	// Blocking movement through obstacles
@@ -173,24 +154,24 @@ void Game::updateModel(sf::RenderWindow &window)
 
 	float windowedPlayerX = static_cast<float>(m_player.getWindowedPosition(window).x);
 
-	if (windowedPlayerX < static_cast<signed int>(window.getSize().x) / 2 - 100 &&
+	if (windowedPlayerX < static_cast<signed int>(window.getSize().x) / 2 - m_player.getSize().x / 2 &&
 		m_dir == Dir::Left)
 	{
 		m_view.move(-m_moveSpeed * m_dt.asMilliseconds(), 0);
 	}
-	else if (windowedPlayerX + m_player.getSize().x > window.getSize().x / 2 + m_player.getSize().x + 100 &&
+	else if (windowedPlayerX + m_player.getSize().x > window.getSize().x / 2 - m_player.getSize().x / 2 &&
 		m_dir == Dir::Right)
 	{
 		m_view.move(m_moveSpeed * m_dt.asMilliseconds(), 0);
 	}
 
-	if (m_player.getWindowedPosition(window).y < static_cast<signed int>(window.getSize().y) / 2 - 100)
+	if (m_player.getWindowedPosition(window).y < static_cast<signed int>(window.getSize().y) / 2)
 	{
-		m_view.move(0, -m_jumpSpeed * m_dt.asMilliseconds());
+		m_view.move(0, m_minJumpVel * m_dt.asMilliseconds());
 	}
-	else if (m_player.getWindowedPosition(window).y + m_player.getSize().y > window.getSize().y / 2 + m_player.getSize().y)
+	else if (m_player.getWindowedPosition(window).y + m_player.getSize().y > window.getSize().y / 2)
 	{
-		m_view.move(0, m_gravity * m_dt.asMilliseconds());
+		m_view.move(0, m_velocity * m_dt.asMilliseconds());
 	}
 }
 
