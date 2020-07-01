@@ -180,24 +180,24 @@ void Game::updateModel(sf::RenderWindow &window)
 	//////////////////////////////////////////////////
 	// Camera movement
 
-	float windowedPlayerX = static_cast<float>(m_player.getWindowedPosition(window).x);
+	sf::Vector2f windowedPlayerPos = sf::Vector2f(m_player.getWindowedPosition(window));
 
-	if (windowedPlayerX < static_cast<signed int>(window.getSize().x) / 2 - m_player.getSize().x / 2 &&
+	if (windowedPlayerPos.x < window.getSize().x / 2 - m_player.getSize().x / 2 &&
 		m_dir == Dir::Left)
 	{
 		m_view.move(-m_moveSpeed * m_dt.asMicroseconds(), 0);
 	}
-	else if (windowedPlayerX + m_player.getSize().x > window.getSize().x / 2 - m_player.getSize().x / 2 &&
+	else if (windowedPlayerPos.x + m_player.getSize().x > window.getSize().x / 2 - m_player.getSize().x / 2 &&
 		m_dir == Dir::Right)
 	{
 		m_view.move(m_moveSpeed * m_dt.asMicroseconds(), 0);
 	}
 
-	if (m_player.getWindowedPosition(window).y < static_cast<signed int>(window.getSize().y) / 2)
+	if (windowedPlayerPos.y < window.getSize().y / 2)
 	{
 		m_view.move(0, m_minJumpVel * m_dt.asMicroseconds());
 	}
-	else if (m_player.getWindowedPosition(window).y + m_player.getSize().y > window.getSize().y / 2)
+	else if (windowedPlayerPos.y + m_player.getSize().y > window.getSize().y / 2)
 	{
 		m_view.move(0, m_velocity * m_dt.asMicroseconds());
 	}

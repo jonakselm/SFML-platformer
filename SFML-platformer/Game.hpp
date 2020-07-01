@@ -34,7 +34,7 @@ private:
 		m_rampable = false;
 
 	const float m_moveSpeed = 0.00075f, m_minJumpVel = -0.0004f, m_gravity = 0.0000000008f,
-		m_terminalVel = 0.0025;
+		m_terminalVel = 0.0025f;
 
 	float m_jumpOrigin = 0, m_rampUp = 0, m_jumpHeight = 0, m_jumpTime;
 
