@@ -104,8 +104,8 @@ void Game::updateModel(sf::RenderWindow &window)
 		m_grounded = false;
 	}
 
-	m_player.move(0, m_velocity * m_dt.asMilliseconds());
-	m_velocity += m_gravity * m_dt.asMilliseconds();
+	m_player.move(0, m_velocity * m_dt.asMicroseconds());
+	m_velocity += m_gravity * m_dt.asMicroseconds();
 
 	m_jumpHeight = m_minJumpVel * 2000.f + 0.5f * m_gravity * std::pow(2000.f, 2);
 
@@ -119,7 +119,7 @@ void Game::updateModel(sf::RenderWindow &window)
 		if (platform.inView())
 		{
 			if (m_dir == Dir::Left &&
-				m_player.insideOffsetXBounds(platform, -m_moveSpeed * m_dt.asMilliseconds()) &&
+				m_player.insideOffsetXBounds(platform, -m_moveSpeed * m_dt.asMicroseconds()) &&
 				m_player.insideYBounds(platform))
 			{
 				m_dir = Dir::None;
@@ -136,7 +136,7 @@ void Game::updateModel(sf::RenderWindow &window)
 		if (platform.inView())
 		{
 			if (m_dir == Dir::Right &&
-				m_player.insideOffsetXBounds(platform, m_moveSpeed * m_dt.asMilliseconds()) &&
+				m_player.insideOffsetXBounds(platform, m_moveSpeed * m_dt.asMicroseconds()) &&
 				m_player.insideYBounds(platform))
 			{
 				m_dir = Dir::None;
@@ -156,10 +156,10 @@ void Game::updateModel(sf::RenderWindow &window)
 	case Dir::None:
 		break;
 	case Dir::Left:
-		m_player.move(-m_moveSpeed * m_dt.asMilliseconds(), 0);
+		m_player.move(-m_moveSpeed * m_dt.asMicroseconds(), 0);
 		break;
 	case Dir::Right:
-		m_player.move(m_moveSpeed * m_dt.asMilliseconds(), 0);
+		m_player.move(m_moveSpeed * m_dt.asMicroseconds(), 0);
 		break;
 	}
 
@@ -185,21 +185,21 @@ void Game::updateModel(sf::RenderWindow &window)
 	if (windowedPlayerX < static_cast<signed int>(window.getSize().x) / 2 - m_player.getSize().x / 2 &&
 		m_dir == Dir::Left)
 	{
-		m_view.move(-m_moveSpeed * m_dt.asMilliseconds(), 0);
+		m_view.move(-m_moveSpeed * m_dt.asMicroseconds(), 0);
 	}
 	else if (windowedPlayerX + m_player.getSize().x > window.getSize().x / 2 - m_player.getSize().x / 2 &&
 		m_dir == Dir::Right)
 	{
-		m_view.move(m_moveSpeed * m_dt.asMilliseconds(), 0);
+		m_view.move(m_moveSpeed * m_dt.asMicroseconds(), 0);
 	}
 
 	if (m_player.getWindowedPosition(window).y < static_cast<signed int>(window.getSize().y) / 2)
 	{
-		m_view.move(0, m_minJumpVel * m_dt.asMilliseconds());
+		m_view.move(0, m_minJumpVel * m_dt.asMicroseconds());
 	}
 	else if (m_player.getWindowedPosition(window).y + m_player.getSize().y > window.getSize().y / 2)
 	{
-		m_view.move(0, m_velocity * m_dt.asMilliseconds());
+		m_view.move(0, m_velocity * m_dt.asMicroseconds());
 	}
 }
 

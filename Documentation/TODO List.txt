@@ -4,7 +4,7 @@ Implement features:
 	- 
 
 - Small:
-	- 
+	- Make a custom timer and clock (instead of using SFML time and clock)
 
 - Medium:
 	- Make it possible to queue a jump to prevent accidentally killing yourself
