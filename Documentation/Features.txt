@@ -3,7 +3,7 @@ Features:
 	- Tests every frame if the platforms are in view
 
 - Controls
-	- Jumps can be queued after the player starts falling (to prevent earlybirds from killing themselves)
+	- Jumps can be queued after the player starts falling with a velocity of 0.0001 (to prevent earlybirds from killing themselves)
 
 - Time:
 	- Fully time dependent

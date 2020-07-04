@@ -17,7 +17,7 @@ Game::Game(sf::Window &window)
 	for (unsigned int i = 1; i < 100; i++)
 	{
 		const sf::Vector2f &prevPos = m_platforms[i - 1].getPosition();
-		m_platforms.emplace_back(prevPos.x + m_platformSize.x + 200, prevPos.y, m_platformSize);
+		m_platforms.emplace_back(prevPos.x + m_platformSize.x + 100 + (std::rand() % 200), prevPos.y - (std::rand() % 200) + 100, m_platformSize);
 	}
 
 
@@ -85,7 +85,7 @@ void Game::updateModel(sf::RenderWindow &window)
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) &&
 		m_activatable &&
-		m_velocity > 0 &&
+		m_velocity > 0.0001 &&
 		!m_grounded)
 	{
 		m_queueJump = true;

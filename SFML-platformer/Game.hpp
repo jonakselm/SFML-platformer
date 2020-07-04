@@ -19,7 +19,7 @@ private:
 	sf::Text m_platformYPosText, m_jumpHeightText, m_rampableText, m_jumpTimeText;
 
 	sf::Clock m_gameClock;
-	// Dt: Time per frame, JumpTimer: How long space has been held
+	// Dt: Time per frame
 	sf::Time m_dt;
 
 	sf::View m_view;
