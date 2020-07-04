@@ -38,6 +38,9 @@ Game::Game(sf::Window &window)
 	m_jumpTimeText.setFont(m_font);
 	m_jumpTimeText.setPosition(10, 160);
 	m_jumpTimeText.setString("");
+
+	// To prevent slow loading from sending you outside the start platform
+	m_gameClock.restart();
 }
 
 Game::~Game()
@@ -71,45 +74,35 @@ void Game::updateModel(sf::RenderWindow &window)
 	//////////////////////////////////////////////////
 	// Jumping controls
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) &&
+		m_jumpable)
 	{
 		m_rampable = true;
 		m_jumpable = false;
-		m_jump = true;
-		m_jumpOrigin = m_player.getPosition().y;
+		m_velocity = m_minJumpVel;
 	}
 	else if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Space) &&
 		m_grounded)
 	{
 		m_jumpable = true;
 	}
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) &&
+	else
+		m_jumpable = false;
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) &&
 		m_rampable && m_rampUp < 100)
 	{
 		m_rampUp = std::abs(m_player.getPosition().y - m_jumpOrigin);
 	}
-	else
-		m_jumpable = false;
 
 	if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
 		m_rampable = false;
 
 	//////////////////////////////////////////////////
-	// Jumping, falling and grounded logic
+	// Update velocity (jumping and falling)
 
-	if (m_jump)
-	{
-		m_velocity = m_minJumpVel;
-		m_jump = false;
-		m_grounded = false;
-	}
-
-	m_player.move(0, m_velocity * m_dt.asMicroseconds());
-	m_velocity += m_gravity * m_dt.asMicroseconds();
-
-	m_jumpHeight = m_minJumpVel * 2000.f + 0.5f * m_gravity * std::pow(2000.f, 2);
-
-	m_jumpTime = 0 - m_minJumpVel / m_gravity;
+	if (m_velocity < m_terminalVel)
+		m_velocity += m_gravity * m_dt.asMicroseconds();
 
 	//////////////////////////////////////////////////
 	// Blocking movement through obstacles
@@ -118,28 +111,45 @@ void Game::updateModel(sf::RenderWindow &window)
 	{
 		if (platform.inView())
 		{
+			//////////////////////////////////////////////////
+			// Blocking movement in y-axis when meeting obstacles
+
+			if (m_player.insideOffsetYBounds(platform, m_velocity * m_dt.asMicroseconds()) &&
+				m_player.insideXBounds(platform))
+			{
+				m_velocity -= m_velocity;
+
+				if (m_player.getPosition().y + m_player.getSize().y <= platform.getPosition().y)
+				{
+					m_player.setPosition(m_player.getPosition().x, platform.getPosition().y - m_player.getSize().y);
+				}
+				else if (m_player.getPosition().y > platform.getPosition().y + platform.getSize().y)
+				{
+					m_player.setPosition(m_player.getPosition().x, platform.getPosition().y + platform.getSize().y);
+				}
+			}
+
+			//////////////////////////////////////////////////
+			// Blocking movement in x-axis when meeting obstacles
+
 			if (m_dir == Dir::Left &&
 				m_player.insideOffsetXBounds(platform, -m_moveSpeed * m_dt.asMicroseconds()) &&
 				m_player.insideYBounds(platform))
 			{
 				m_dir = Dir::None;
+				m_player.setPosition(platform.getPosition().x + platform.getSize().x, m_player.getPosition().y);
 			}
 			// Might be of use later
 			else
 			{
 			}
-		}
-	}
 
-	for (const auto &platform : m_platforms)
-	{
-		if (platform.inView())
-		{
 			if (m_dir == Dir::Right &&
 				m_player.insideOffsetXBounds(platform, m_moveSpeed * m_dt.asMicroseconds()) &&
 				m_player.insideYBounds(platform))
 			{
 				m_dir = Dir::None;
+				m_player.setPosition(platform.getPosition().x - m_player.getSize().x, m_player.getPosition().y);
 			}
 			// Might be of use later
 			else
@@ -148,8 +158,19 @@ void Game::updateModel(sf::RenderWindow &window)
 		}
 	}
 
+	// If the player stands on a platform he is grounded (velocity == 0)
+	if (m_velocity == 0)
+		m_grounded = true;
+	else
+		m_grounded = false;
+
+
+	m_jumpHeight = m_minJumpVel * 2000.f + 0.5f * m_gravity * std::pow(2000.f, 2);
+
+	m_jumpTime = 0 - m_minJumpVel / m_gravity;
+
 	//////////////////////////////////////////////////
-	// Movement (left, right)
+	// Movement
 
 	switch (m_dir)
 	{
@@ -163,6 +184,8 @@ void Game::updateModel(sf::RenderWindow &window)
 		break;
 	}
 
+	m_player.move(0, m_velocity * m_dt.asMicroseconds());
+
 	//////////////////////////////////////////////////
 	// Update sf::Text
 
@@ -172,10 +195,10 @@ void Game::updateModel(sf::RenderWindow &window)
 	m_platformYPosText.setString(ss0.str());
 
 	ss1 << "Jump Height: " << std::to_string(m_jumpHeight);
-	m_jumpHeightText.setString(ss1.str());
+	m_jumpHeightText.setString(std::to_string(m_velocity));
 
 	ss2 << "Estimated Jump Time: " << std::to_string(m_jumpTime);
-	m_jumpTimeText.setString(ss2.str());
+	m_jumpTimeText.setString(std::to_string(m_dt.asMicroseconds()));
 
 	//////////////////////////////////////////////////
 	// Camera movement

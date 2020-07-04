@@ -30,8 +30,7 @@ private:
 	Player m_player;
 	float m_velocity = 0.f;
 	Dir m_dir = Dir::None;
-	bool m_jumpable = true, m_grounded = true, m_jump = false, m_falling = false,
-		m_rampable = false;
+	bool m_jumpable = true,	m_rampable = false, m_grounded = true;
 
 	const float m_moveSpeed = 0.00075f, m_minJumpVel = -0.0004f, m_gravity = 0.0000000008f,
 		m_terminalVel = 0.0025f;

@@ -12,9 +12,9 @@ from pressing 'Space' too quickly
 	- Make collision detection for the y-plane
 
 - Big:
-	- 
+	- Split game class into other smaller classes (currently does too much)
 
-- Critical:
+- Huge:
 	- 
 
 
