@@ -7,10 +7,7 @@ public:
 
 	bool intersects(const Shape &other)
 	{
-		return (getGlobalBounds().left + getGlobalBounds().width > other.getGlobalBounds().left ||
-			getGlobalBounds().left < other.getGlobalBounds().left + other.getGlobalBounds().width) &&
-			(getGlobalBounds().top + getGlobalBounds().height > other.getGlobalBounds().top ||
-			getGlobalBounds().top < other.getGlobalBounds().top + other.getGlobalBounds().height);
+		return getGlobalBounds().intersects(other.getGlobalBounds());
 	}
 	bool insideXBounds(const Shape &other)
 	{
