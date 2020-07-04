@@ -14,9 +14,9 @@ Game::Game(sf::Window &window)
 	m_player.setFillColor(sf::Color::Green);
 
 	m_platforms.emplace_back(0, 0, m_platformSize);
-	for (unsigned int i = 1; i < 100; i++)
+	for (unsigned int i = 1; i < 10; i++)
 	{
-		const sf::Vector2f &prevPos = m_platforms[i - 1].getPosition();
+		const sf::Vector2f &prevPos = m_platforms.back().getPosition();
 		m_platforms.emplace_back(prevPos.x + m_platformSize.x + 100 + (std::rand() % 200), prevPos.y - (std::rand() % 200) + 100, m_platformSize);
 	}
 
@@ -186,6 +186,15 @@ void Game::updateModel(sf::RenderWindow &window)
 	}
 
 	m_player.move(0, m_velocity * m_dt.asMicroseconds());
+
+	//////////////////////////////////////////////////
+	// Spawn new platforms when the player is close to the end of platforms
+
+	if (m_platforms.back().getPosition().x < m_player.getPosition().x + 2000)
+	{
+		const sf::Vector2f &prevPos = m_platforms.back().getPosition();
+		m_platforms.emplace_back(prevPos.x + m_platformSize.x + 100 + (std::rand() % 200), prevPos.y - (std::rand() % 200) + 100, m_platformSize);
+	}
 
 	//////////////////////////////////////////////////
 	// Update sf::Text
