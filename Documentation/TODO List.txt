@@ -7,9 +7,7 @@ Implement features:
 	- Make a custom timer and clock (instead of using SFML time and clock)
 
 - Medium:
-	- Make it possible to queue a jump to prevent accidentally killing yourself
-from pressing 'Space' too quickly
-	- Make collision detection for the y-plane
+	- 
 
 - Big:
 	- Split game class into other smaller classes (currently does too much)

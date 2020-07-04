@@ -33,7 +33,7 @@ Game::Game(sf::Window &window)
 
 	m_rampableText.setFont(m_font);
 	m_rampableText.setPosition(10, 110);
-	m_rampableText.setString("Rampable");
+	m_rampableText.setString("Jumpable");
 
 	m_jumpTimeText.setFont(m_font);
 	m_jumpTimeText.setPosition(10, 160);
@@ -74,29 +74,30 @@ void Game::updateModel(sf::RenderWindow &window)
 	//////////////////////////////////////////////////
 	// Jumping controls
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) &&
-		m_jumpable)
+	if ((sf::Keyboard::isKeyPressed(sf::Keyboard::Space) &&
+		m_jumpable) ||
+		(m_queueJump && m_grounded))
 	{
-		m_rampable = true;
-		m_jumpable = false;
 		m_velocity = m_minJumpVel;
+		m_jumpable = false;
+		m_queueJump = false;
+		m_activatable = false;
 	}
-	else if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Space) &&
-		m_grounded)
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) &&
+		m_activatable &&
+		m_velocity > 0 &&
+		!m_grounded)
+	{
+		m_queueJump = true;
+	}
+	else if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+	{
+		m_activatable = true;
+	}
+	else if (m_activatable && m_grounded)
 	{
 		m_jumpable = true;
 	}
-	else
-		m_jumpable = false;
-
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) &&
-		m_rampable && m_rampUp < 100)
-	{
-		m_rampUp = std::abs(m_player.getPosition().y - m_jumpOrigin);
-	}
-
-	if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
-		m_rampable = false;
 
 	//////////////////////////////////////////////////
 	// Update velocity (jumping and falling)
@@ -247,7 +248,7 @@ void Game::draw(sf::RenderTarget &target)
 	target.draw(m_platformYPosText);
 	target.draw(m_jumpHeightText);
 	target.draw(m_jumpTimeText);
-	if (m_rampable)
+	if (m_queueJump)
 		target.draw(m_rampableText);
 #endif // DEBUG
 

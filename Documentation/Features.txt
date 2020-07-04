@@ -2,13 +2,16 @@ Features:
 - General:
 	- Tests every frame if the platforms are in view
 
+- Controls
+	- Jumps can be queued after the player starts falling (to prevent earlybirds from killing themselves)
+
 - Time:
 	- Fully time dependent
-	- Using sf::Time::asMilliseconds for every player movement
+	- Using sf::Time::asMicroseconds for every player movement
 
 - Physics:
 	- Using real physics for jump (with constant downwards acceleration)
-	- Collision detection in the x-plane
+	- Collision detection in both axis
 	- Only test for collision while platforms are in view
 
 - Drawing:
