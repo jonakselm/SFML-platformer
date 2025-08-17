@@ -1,5 +1,7 @@
 #pragma once
 
+#include <SFML/Graphics/Rect.hpp>
+
 class Shape
 {
 public:
@@ -7,26 +9,26 @@ public:
 
 	bool intersects(const Shape &other)
 	{
-		return getGlobalBounds().intersects(other.getGlobalBounds());
+		return getGlobalBounds().findIntersection(other.getGlobalBounds()).has_value();
 	}
 	bool insideXBounds(const Shape &other)
 	{
-		return getGlobalBounds().left + getGlobalBounds().width > other.getGlobalBounds().left &&
-			getGlobalBounds().left < other.getGlobalBounds().left + other.getGlobalBounds().width;
+		return getGlobalBounds().position.x + getGlobalBounds().size.x > other.getGlobalBounds().position.x &&
+			getGlobalBounds().position.x < other.getGlobalBounds().position.x + other.getGlobalBounds().size.x;
 	}
 	bool insideOffsetXBounds(const Shape &other, float offset)
 	{
-		return getGlobalBounds().left + getGlobalBounds().width + offset > other.getGlobalBounds().left &&
-			getGlobalBounds().left + offset < other.getGlobalBounds().left + other.getGlobalBounds().width;
+		return getGlobalBounds().position.x + getGlobalBounds().size.x + offset > other.getGlobalBounds().position.x &&
+			getGlobalBounds().position.x + offset < other.getGlobalBounds().position.x + other.getGlobalBounds().size.x;
 	}
 	bool insideYBounds(const Shape &other)
 	{
-		return getGlobalBounds().top + getGlobalBounds().height > other.getGlobalBounds().top &&
-			getGlobalBounds().top < other.getGlobalBounds().top + other.getGlobalBounds().height;
+		return getGlobalBounds().position.y + getGlobalBounds().size.y > other.getGlobalBounds().position.y &&
+			getGlobalBounds().position.y < other.getGlobalBounds().position.y + other.getGlobalBounds().size.y;
 	}
 	bool insideOffsetYBounds(const Shape &other, float offset)
 	{
-		return getGlobalBounds().top + getGlobalBounds().height + offset > other.getGlobalBounds().top &&
-			getGlobalBounds().top + offset < other.getGlobalBounds().top + other.getGlobalBounds().height;
+		return getGlobalBounds().position.y + getGlobalBounds().size.y + offset > other.getGlobalBounds().position.y &&
+			getGlobalBounds().position.y + offset < other.getGlobalBounds().position.y + other.getGlobalBounds().size.y;
 	}
 };

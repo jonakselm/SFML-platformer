@@ -6,9 +6,14 @@
 Game::Game(sf::Window &window)
 	:
 	m_view(sf::Vector2f(0, 0), sf::Vector2f(window.getSize())),
-	m_shape(sf::Vector2f(20, 20))
+	m_shape(sf::Vector2f(20, 20)),
+	m_font("../SFML-platformer/data/fonts/Georgia.ttf"),
+	m_platformYPosText(m_font),
+	m_jumpHeightText(m_font),
+	m_rampableText(m_font),
+	m_jumpTimeText(m_font)
 {
-	m_view.setViewport(sf::FloatRect(0, 0, 1, 1));
+	m_view.setViewport(sf::FloatRect({ 0, 0 }, { 1, 1 }));
 	m_shape.setFillColor(sf::Color::Red);
 	m_player.setPosition(0, -m_player.getSize().y);
 	m_player.setFillColor(sf::Color::Green);
@@ -21,22 +26,16 @@ Game::Game(sf::Window &window)
 	}
 
 
-	m_font.loadFromFile("data/fonts/Georgia.ttf");
-
-	m_platformYPosText.setFont(m_font);
-	m_platformYPosText.setPosition(10, 10);
+	m_platformYPosText.setPosition({ 10, 10 });
 	m_platformYPosText.setString("");
 
-	m_jumpHeightText.setFont(m_font);
-	m_jumpHeightText.setPosition(10, 60);
+	m_jumpHeightText.setPosition({ 10, 60 });
 	m_jumpHeightText.setString("");
 
-	m_rampableText.setFont(m_font);
-	m_rampableText.setPosition(10, 110);
+	m_rampableText.setPosition({ 10, 110 });
 	m_rampableText.setString("Jumpable");
 
-	m_jumpTimeText.setFont(m_font);
-	m_jumpTimeText.setPosition(10, 160);
+	m_jumpTimeText.setPosition({ 10, 160 });
 	m_jumpTimeText.setString("");
 
 	// To prevent slow loading from sending you outside the start platform
@@ -62,11 +61,11 @@ void Game::updateModel(sf::RenderWindow &window)
 	//////////////////////////////////////////////////
 	// Movement controls
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) ||
-		sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left) ||
+		sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
 		m_dir = Dir::Left;
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) ||
-		sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right) ||
+		sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
 		m_dir = Dir::Right;
 	else
 		m_dir = Dir::None;
@@ -74,7 +73,7 @@ void Game::updateModel(sf::RenderWindow &window)
 	//////////////////////////////////////////////////
 	// Jumping controls
 
-	if ((sf::Keyboard::isKeyPressed(sf::Keyboard::Space) &&
+	if ((sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space) &&
 		m_jumpable) ||
 		(m_queueJump && m_grounded))
 	{
@@ -83,14 +82,14 @@ void Game::updateModel(sf::RenderWindow &window)
 		m_queueJump = false;
 		m_activatable = false;
 	}
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) &&
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space) &&
 		m_activatable &&
 		m_velocity > 0.0001 &&
 		!m_grounded)
 	{
 		m_queueJump = true;
 	}
-	else if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+	else if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space))
 	{
 		m_activatable = true;
 	}
@@ -218,21 +217,21 @@ void Game::updateModel(sf::RenderWindow &window)
 	if (windowedPlayerPos.x < window.getSize().x / 2 - m_player.getSize().x / 2 &&
 		m_dir == Dir::Left)
 	{
-		m_view.move(-m_moveSpeed * m_dt.asMicroseconds(), 0);
+		m_view.move({ -m_moveSpeed * m_dt.asMicroseconds(), 0 });
 	}
 	else if (windowedPlayerPos.x + m_player.getSize().x > window.getSize().x / 2 - m_player.getSize().x / 2 &&
 		m_dir == Dir::Right)
 	{
-		m_view.move(m_moveSpeed * m_dt.asMicroseconds(), 0);
+		m_view.move({ m_moveSpeed * m_dt.asMicroseconds(), 0 });
 	}
 
 	if (windowedPlayerPos.y < window.getSize().y / 2)
 	{
-		m_view.move(0, m_minJumpVel * m_dt.asMicroseconds());
+		m_view.move({ 0, m_minJumpVel * m_dt.asMicroseconds() });
 	}
 	else if (windowedPlayerPos.y + m_player.getSize().y > window.getSize().y / 2)
 	{
-		m_view.move(0, m_velocity * m_dt.asMicroseconds());
+		m_view.move({ 0, m_velocity * m_dt.asMicroseconds() });
 	}
 }
 

@@ -1,29 +1,26 @@
 #include "stdafx.h"
 #include "Game.hpp"
-#include <Windows.h>
+//#include <Windows.h>
 
 int main()
 {
 #ifdef DEBUG
-	ShowWindow(GetConsoleWindow(), SW_SHOW);
+	//ShowWindow(GetConsoleWindow(), SW_SHOW);
 #else
 	ShowWindow(GetConsoleWindow(), SW_HIDE);
 #endif // DEBUG
 
-	sf::RenderWindow window(sf::VideoMode(1080, 720), "SFML-platformer");
+	sf::RenderWindow window(sf::VideoMode({ 1080, 720 }), "SFML-platformer");
 
 	Game game(window);
 
 	while (window.isOpen())
 	{
-		sf::Event event;
-		while (window.pollEvent(event))
+		while (const std::optional event = window.pollEvent())
 		{
-			switch (event.type)
+			if (event->is<sf::Event::Closed>())
 			{
-			case sf::Event::Closed:
 				window.close();
-					break;
 			}
 		}
 
